@@ -154,7 +154,7 @@ class Trial(object):
 			portOut.setData(int((self.parameters['triggers'][self.presence]*(self.randpos[0]+1))+self.parameters['triggers']['search'])); core.wait(0.02) # code for stimulus position in array (1-6; 0 when absent) 
 			portOut.setData(0)
 		else:
-			print(int((self.parameters['triggers'][self.presence]*(self.randpos[0]+1))+10))
+			print(int((self.parameters['triggers'][self.presence]*(self.randpos[0]+1))+self.parameters['triggers']['search']))
 
 		self.timer.reset()
 		while True:
