@@ -11,13 +11,11 @@ class Trial(object):
 	"""base class for Trials"""
 	def __init__(self, trial_settings = {}, parameters = {}, screen = None):
 
-		self.block = parameters['block_type']
+		self.block_type = parameters['block_type']
 		self.category = trial_settings[0]
 		self.target = trial_settings[1]
 		self.presence = trial_settings[2]
-		try:
-			self.temp_prob = int(trial_settings[3])
-		except: pass
+		self.trial_type = trial_settings[3]
 		self.trial_settings = trial_settings
 		self.parameters = parameters
 		self.screen = screen
@@ -34,11 +32,18 @@ class Trial(object):
 		self.make_searchArray()
 		self.make_fixation()
 		self.make_feedback()
+		self.make_preCue()
 
 		self.timer = core.Clock()
 
 	def make_fixation(self):
 		self.fixStim = visual.Circle(self.screen, radius = 0.08, fillColor = [1,1,1])
+
+	def make_preCue(self):
+		self.cueStim = list()
+		self.cueStim.append(visual.Circle(self.screen, radius = 0.15, fillColor = [-1,-1,-1])) # short cue
+		self.cueStim.append(visual.Circle(self.screen, radius = 0.30, fillColor = [-1,-1,-1])) # long cue
+		self.cueStim.append(visual.Circle(self.screen, radius = 0.08, fillColor = [1,1,1])) # the fixation cross
 
 	def make_searchTarget(self):
 		# This is the target
@@ -97,16 +102,9 @@ class Trial(object):
 
 		iti_time    = int(floor(float(self.parameters['timing_ITI_Duration']) * float(self.parameters['monitor_refRate'])))
 		iti_jitt    = int(floor(float(self.parameters['timing_ITI_Jitter']) * float(self.parameters['monitor_refRate'])))
+		cue_time 	= int(floor(float(self.parameters['timing_cue_Duration']) * float(self.parameters['monitor_refRate'])))
+		cti_time 	= int(floor(float(self.parameters['timing_CTI_Duration']) * float(self.parameters['monitor_refRate'])))
 		target_time = int(floor(float(self.parameters['timing_target_Duration']) * float(self.parameters['monitor_refRate'])))
-
-		# in principle, the trial type is the same as the block type
-		# the block with short delays has a long delay in 20% of the trials
-		if self.block == 'short' and self.temp_prob==0:
-			self.trial_type = 'long'
-		elif self.block == 'practice':
-			self.trial_type = choice(['short','long'])
-		else:
-			self.trial_type = self.block
 
 		if   self.trial_type == 'short': toggle = 0
 		elif self.trial_type == 'long': toggle = 1
@@ -124,12 +122,23 @@ class Trial(object):
 			self.fixStim.draw()
 			self.screen.flip()
 
+		# Present temporal cue if in cueing block
+		if 'cued' in self.block_type or 'example' in self.trial_settings:
+			for frame in range(cue_time):
+				self.cueStim[toggle].draw()
+				self.cueStim[2].draw()
+				self.screen.flip()
+			# Cue-target interval
+			for frame in range(cti_time):
+				self.fixStim.draw()
+				self.screen.flip()
+
 		# Present search-target stimulus
 		if portOut:
-			portOut.setData(int(self.parameters['triggers'][self.block]+self.parameters['triggers'][self.trial_type]+self.parameters['triggers'][self.category])); core.wait(0.02) # code for category (1,2,3) and short/long/practice block type (+ 60/70/80)
+			portOut.setData(int(self.parameters['triggers'][self.block_type]+self.parameters['triggers'][self.trial_type]+self.parameters['triggers'][self.category])); core.wait(0.02) # code for category (1,2,3) and short/long/practice block type (+ 60/70/80)
 			portOut.setData(0)
 		else:
-			print(int(self.parameters['triggers'][self.block]+self.parameters['triggers'][self.trial_type]+self.parameters['triggers'][self.category]))
+			print(int(self.parameters['triggers'][self.block_type]+self.parameters['triggers'][self.trial_type]+self.parameters['triggers'][self.category]))
 		for frame in range(target_time):
 			self.targetStim.draw()
 			self.fixStim.draw()
@@ -142,7 +151,7 @@ class Trial(object):
 
 		# Present search array stimulus until response
 		if portOut:
-			portOut.setData(int((self.parameters['triggers'][self.presence]*(self.randpos[0]+1))+10)); core.wait(0.02) # code for stimulus position in array (1-6; 0 when absent) 
+			portOut.setData(int((self.parameters['triggers'][self.presence]*(self.randpos[0]+1))+self.parameters['triggers']['search'])); core.wait(0.02) # code for stimulus position in array (1-6; 0 when absent) 
 			portOut.setData(0)
 		else:
 			print(int((self.parameters['triggers'][self.presence]*(self.randpos[0]+1))+10))
@@ -190,7 +199,7 @@ class Trial(object):
 			for frame in range(iti_jitt):
 				self.feedbackStim[2].draw()
 				self.screen.flip()
-		elif self.block=='practice':
+		elif 'practice' in self.block_type:
 			for frame in range(iti_jitt):
 				self.feedbackStim[accuracy].draw()
 				self.screen.flip()
@@ -202,7 +211,7 @@ class Trial(object):
 				self.fixStim.draw()
 				self.screen.flip()
 
-		return ([self.block, self.trial_type, self.category, self.presence, self.response[1], accuracy])
+		return ([self.block_type, self.trial_type, self.category, self.presence, self.response[1], accuracy])
 
 
 	#def export(self):

@@ -24,12 +24,16 @@ params['ports'] = [portOut,portIn]
 
 # Create trigger dictionary, handy for indexing with names
 params['triggers'] = {
-	'practice': 90,
-	'long': 	20,
-	'short': 	10,
+	'practice_nocue': 90,
+	'practice_cued': 90,
+	'cued': 	20,
+	'nocue': 	0,
+	'long':		20,
+	'short':	10,
 	'face': 	1,
 	'house': 	2,
 	'letter': 	3,
+	'search':	50,
 	'absent': 	0,
 	'present': 	1
 }
@@ -48,7 +52,7 @@ if any(ans in fS for ans in['n','N']):
 else:
         params['fullScreen'] = True
 
-params['monitor_refRate'] = 120 # fixed to 60hz for now 
+params['monitor_refRate'] = 60 # fixed to 60hz for now 
 params['monitor_width'] = 47.5
 params['monitor_viewdist'] = 90
 #params['monitor_pixelDims'] = (3200, 1800)
@@ -62,6 +66,8 @@ params['screen'] = myWin
 
 # Trial/stim settings
 params['absent_present'] = ('absent','present')
+params['short_long'] = ('short','long')
+params['precue_stim_size'] = 2
 params['cue_stim_size'] = 2 # resize fraction (2 means half size)
 params['search_stim_size'] = 4 # quarter of original picture size
 params['search_set_size'] = 6
@@ -80,53 +86,51 @@ else:
 # Timing
 params['timing_ITI_Duration']    = 1.0 # ITI
 params['timing_ITI_Jitter']      = 0.5 # set to 0 if no jitter
+params['timing_cue_Duration']    = .25 # duration of temporal cue
+params['timing_CTI_Duration']	 = 1.0 # duration between temporal cue and target
 params['timing_target_Duration'] = .25 # duration of stimulus presentation, in sec
-params['timing_ISI_Duration']    = [1.5,5] # very short for debugging purposes; change to 1.5 and 5 seconds
+params['timing_ISI_Duration']    = [3,6] #
 
-params['temp_prob'] = [1,1,1,1,0]
-
-
-# determine number of trials for (practice) block
-# 50 targets by abs/pres by short/long block by house/face/letter = 600 trials; divided by 6 blocks = 100 trials per block
-# this gives 168 trials per category, collapsed over conditions
-
+if (int(params['subject_id']) % 2 == 0): # evend
+	block_order = ('cued','nocue')
+else: # odd
+	block_order = ('nocue','cued')
+	
 #### GO ####
 
 # first a practice block with task instructions and example trials
-params['block_type'] = 'practice'
-params['ready_text'] = 'stimuli/ready_practice.txt'
-params['ntrials']    = 24 # needs to be divided by 3 categories
-params['rep_check']  = (12,4) # in chuncks of 12 trials, it is checked whether repetitions of 4 or more occur for absent/present
-params['nblocks']    = 1 
-exp = Experiment(params) 
-exp.run_instruction('stimuli/instruct1.txt')
-exp.run_example_trial(['face',inFiles[0][0],'present','short'])
-exp.run_instruction('stimuli/instruct2.txt')
-exp.run_example_trial(['house',inFiles[1][10],'absent','long'])
-exp.run_instruction('stimuli/instruct3.txt')
-exp.run()
-exp.run_instruction('stimuli/finish_practice.txt')
-##
-# experimental block with only long intervals
-params['block_type'] = 'long'
-params['ready_text'] = 'stimuli/ready_long.txt'
-params['ntrials']    = 300 # needs to be divided by 3*2 (category by absent/present) -> for real experiment 300
-params['rep_check']  = (30,5) # 300 trials are divided up in chuncks of 30 where absent/present is shuffled such that no 5 repetitions are allowed
-params['nblocks']    = 4 #                                                           -> for real experiment 4
-exp = Experiment(params) 
-exp.run()
-if exp.finished():
-   exp.store()
-   
-# experimental block with mostly short, sometimes long intervals (80/20 prob.)
-params['block_type'] = 'short'
-params['ready_text'] = 'stimuli/ready_short.txt'
-exp = Experiment(params) 
-exp.run()
 
-if exp.finished():
-   exp.store()
-   exp.run_instruction('stimuli/finish_exp.txt')
+for b,block in enumerate(block_order):
+
+	# practice block
+	params['block_type'] = ('practice_' + block)
+	params['ready_text'] = ('stimuli/ready_practice_'  + block + '.txt')
+	params['ntrials']    = 12 # needs to be divided by 3 categories
+	params['rep_check']  = (12,4) # in chuncks of 12 trials, it is checked whether repetitions of 4 or more occur for absent/present
+	params['nblocks']    = 1 
+	exp = Experiment(params) 
+
+	if b==0: # show some additional explanation screens if first block
+		exp.run_instruction('stimuli/instruct1.txt')
+		exp.run_example_trial(['face',inFiles[0][0],'present','short','example'])
+		exp.run_instruction('stimuli/instruct2.txt')
+		exp.run_example_trial(['house',inFiles[1][10],'absent','long','example'])
+		exp.run_instruction('stimuli/instruct3.txt')
+		exp.run()
+
+	# experimental block
+	params['block_type'] = block
+	params['ready_text'] = ('stimuli/ready_' + block + '.txt')
+	params['ntrials']    = 240 # needs to be divided by 3 (categories)
+	params['nblocks']    = 8
+	params['rep_check']  = (params['ntrials']/params['nblocks'],5) # 240 trials are divided up in 8 chuncks of 30 where absent/present is shuffled such that no 5 repetitions are allowed
+	exp = Experiment(params) 
+	exp.run()
+	if exp.finished():
+	   exp.store()
+
+	   if b==1:
+		   exp.run_instruction('stimuli/finish_exp.txt')
 
 # END #
 #################################################

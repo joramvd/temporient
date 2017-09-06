@@ -1,0 +1,19 @@
+This was the end of the practice block.
+Now the real experiment will start.
+
+We will measure EEG, so try to sit still.
+Also, try to blink your eyes only in between trials.
+
+If you have any questions, this is the time to ask!
+
+In the next NBLOCKS blocks of NTRIALS trials,
+you will NOT know whether the search task will come
+early or late.
+
+You will only receive feedback about your average
+performance after each block.
+
+Are you ready?
+Press a button to start!
+
+

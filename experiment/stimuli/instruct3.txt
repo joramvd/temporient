@@ -6,8 +6,12 @@ longer period of time than during the first trial.
 During the remainder of the experiment, the search task will sometimes
 come early, and sometimes come late.
 
-Nonetheless, always try to remember the picture.
+In one half of the experiment, a symbol before each trial will inform
+you about this. In the other half, you never know if the search task
+will come early or late. You will practice these two versions of the task.
 
+During the whole experiment, at every trial, always try to remember the picture
+as good as possible.
 
 So again:
 

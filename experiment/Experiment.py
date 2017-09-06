@@ -26,7 +26,7 @@ class Experiment(object):
 			files_c = deepcopy(files)
 			shuffle(files_c)
 			for target in files_c[0:self.parameters['ntargets']]: # within category, loop over unique pictures
-				self.trial_settings.append([category,target,choice(self.parameters['absent_present']),choice(self.parameters['temp_prob'])])
+				self.trial_settings.append([category,target,choice(self.parameters['absent_present']),choice(self.parameters['short_long'])])
 		shuffle(self.trial_settings)
 
 		# do a repetition check of present/absent sequences:
@@ -54,8 +54,8 @@ class Experiment(object):
 		for i in range(len(self.trial_settings)):
 			self.trial_settings[i][len(self.trial_settings[i])-2] = presence[i]
 
-		# do a repetition check of long/short sequences in short block with 20% long trials
-		repeatCheck = 2  # How many repeats are not *allowed*
+		# do a repetition check of long/short sequences 
+		repeatCheck = self.parameters['rep_check'][1]  # How many repeats are not *allowed*
 		chunckSeq = [chunck*k for k in range(len(self.trial_settings)/chunck+1)] 
 		longshort = list()
 		for k in range(len(self.trial_settings)/chunck):
@@ -65,7 +65,7 @@ class Experiment(object):
 				shuffleAgain = False
 				for i in range(len(a)-(repeatCheck-1)):
 					slice = a[i:i+repeatCheck]
-					if sum(map(int,slice)) == 0:
+					if len(np.unique(slice)) == 1:
 						shuffleAgain = True
 				if not shuffleAgain:
 					longshort = longshort + a
@@ -112,7 +112,7 @@ class Experiment(object):
 		text_screen.show()
                                         
 	def run_example_trial(self, trial_parameters = list()):
-	 	examp_trial = Trial(np.array(trial_parameters), self.parameters, self.screen) # example trial
+	 	examp_trial = Trial(np.array(trial_parameters), self.parameters, self.screen)
 	 	examp_trial.run()
 
 	### administrative functions ###

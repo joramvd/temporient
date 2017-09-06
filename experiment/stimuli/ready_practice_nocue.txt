@@ -1,0 +1,9 @@
+You will now practice for NTRIALS trials.
+
+In this part of the experiment, you will not know if the search task
+will come early or late.
+
+You will receive feedback every time you respond.
+
+Are you ready?
+Press a button to start!

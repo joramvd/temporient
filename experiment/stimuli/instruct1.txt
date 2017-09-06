@@ -3,7 +3,7 @@ Welcome to this experiment.
 On each trial you will first briefly see a picture 
 (a face, a letter, or a house)
 
-You need to remember these pictures during a short delay. 
+You need to remember these pictures during a delay. 
 
 After this delay you will see a circle of 6 pictures. 
 Your task is to judge whether the picture you remembered
