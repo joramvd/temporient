@@ -15,7 +15,10 @@ class Trial(object):
 		self.category = trial_settings[0]
 		self.target = trial_settings[1]
 		self.presence = trial_settings[2]
-		self.trial_type = trial_settings[3]
+		if self.block_type == 'mixed':
+			self.trial_type = trial_settings[3] # use the semi-randomized assignment of short/long
+		else: # if it's a fixed block
+			self.trial_type = self.block_type # the trial type is the same as block type
 		self.trial_settings = trial_settings
 		self.parameters = parameters
 		self.screen = screen
@@ -32,18 +35,11 @@ class Trial(object):
 		self.make_searchArray()
 		self.make_fixation()
 		self.make_feedback()
-		self.make_preCue()
 
 		self.timer = core.Clock()
 
 	def make_fixation(self):
 		self.fixStim = visual.Circle(self.screen, radius = 0.08, fillColor = [1,1,1])
-
-	def make_preCue(self):
-		self.cueStim = list()
-		self.cueStim.append(visual.Circle(self.screen, radius = 0.15, fillColor = [-1,-1,-1])) # short cue
-		self.cueStim.append(visual.Circle(self.screen, radius = 0.30, fillColor = [-1,-1,-1])) # long cue
-		self.cueStim.append(visual.Circle(self.screen, radius = 0.08, fillColor = [1,1,1])) # the fixation cross
 
 	def make_searchTarget(self):
 		# This is the target
@@ -102,8 +98,6 @@ class Trial(object):
 
 		iti_time    = int(floor(float(self.parameters['timing_ITI_Duration']) * float(self.parameters['monitor_refRate'])))
 		iti_jitt    = int(floor(float(self.parameters['timing_ITI_Jitter']) * float(self.parameters['monitor_refRate'])))
-		cue_time 	= int(floor(float(self.parameters['timing_cue_Duration']) * float(self.parameters['monitor_refRate'])))
-		cti_time 	= int(floor(float(self.parameters['timing_CTI_Duration']) * float(self.parameters['monitor_refRate'])))
 		target_time = int(floor(float(self.parameters['timing_target_Duration']) * float(self.parameters['monitor_refRate'])))
 
 		if   self.trial_type == 'short': toggle = 0
@@ -121,17 +115,6 @@ class Trial(object):
 			self.fixStim.lineColor=[1,1,1]
 			self.fixStim.draw()
 			self.screen.flip()
-
-		# Present temporal cue if in cueing block
-		if 'cued' in self.block_type or 'example' in self.trial_settings:
-			for frame in range(cue_time):
-				self.cueStim[toggle].draw()
-				self.cueStim[2].draw()
-				self.screen.flip()
-			# Cue-target interval
-			for frame in range(cti_time):
-				self.fixStim.draw()
-				self.screen.flip()
 
 		# Present search-target stimulus
 		if portOut:

@@ -27,6 +27,7 @@ class Experiment(object):
 			shuffle(files_c)
 			for target in files_c[0:self.parameters['ntargets']]: # within category, loop over unique pictures
 				self.trial_settings.append([category,target,choice(self.parameters['absent_present']),choice(self.parameters['short_long'])])
+				# short/long always randomly assigned so we can check the repetition below; in Trial.py, overrule based on blocked condition if not mixed
 		shuffle(self.trial_settings)
 
 		# do a repetition check of present/absent sequences:

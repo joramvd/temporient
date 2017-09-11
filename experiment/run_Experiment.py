@@ -24,10 +24,9 @@ params['ports'] = [portOut,portIn]
 
 # Create trigger dictionary, handy for indexing with names
 params['triggers'] = {
-	'practice_nocue': 90,
-	'practice_cued': 90,
-	'cued': 	20,
-	'nocue': 	0,
+	'practice': 90,
+	'mixed': 	20,
+	'blocked': 	0,
 	'long':		20,
 	'short':	10,
 	'face': 	1,
@@ -55,7 +54,6 @@ else:
 params['monitor_refRate'] = 60 # fixed to 60hz for now 
 params['monitor_width'] = 47.5
 params['monitor_viewdist'] = 90
-#params['monitor_pixelDims'] = (3200, 1800)
 params['screenSize'] = [1680, 1050]
 
 mon = monitors.Monitor(name = 'HP', width = params['monitor_width'], distance = params['monitor_viewdist'])
@@ -67,7 +65,6 @@ params['screen'] = myWin
 # Trial/stim settings
 params['absent_present'] = ('absent','present')
 params['short_long'] = ('short','long')
-params['precue_stim_size'] = 2
 params['cue_stim_size'] = 2 # resize fraction (2 means half size)
 params['search_stim_size'] = 4 # quarter of original picture size
 params['search_set_size'] = 6
@@ -86,15 +83,13 @@ else:
 # Timing
 params['timing_ITI_Duration']    = 1.0 # ITI
 params['timing_ITI_Jitter']      = 0.5 # set to 0 if no jitter
-params['timing_cue_Duration']    = .25 # duration of temporal cue
-params['timing_CTI_Duration']	 = 1.0 # duration between temporal cue and target
 params['timing_target_Duration'] = .25 # duration of stimulus presentation, in sec
 params['timing_ISI_Duration']    = [3,6] #
 
 if (int(params['subject_id']) % 2 == 0): # evend
-	block_order = ('cued','nocue')
+	block_order = ('short','long','mixed')
 else: # odd
-	block_order = ('nocue','cued')
+	block_order = ('long','short','mixed')
 	
 #### GO ####
 
@@ -118,6 +113,8 @@ for b,block in enumerate(block_order):
 		exp.run_instruction('stimuli/instruct3.txt')
 		exp.run()
 
+for b,block in enumerate(block_order):
+	
 	# experimental block
 	params['block_type'] = block
 	params['ready_text'] = ('stimuli/ready_' + block + '.txt')
