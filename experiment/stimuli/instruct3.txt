@@ -4,11 +4,10 @@ You may have noticed that you needed to memorize the picture for a
 longer period of time than during the first trial.
 
 During the remainder of the experiment, the search task will sometimes
-come early, and sometimes come late.
-
-In one half of the experiment, a symbol before each trial will inform
-you about this. In the other half, you never know if the search task
-will come early or late. You will practice these two versions of the task.
+come early, and sometimes come late. This is either always the same for
+every trial in one block; or it is different for each trial in a block,
+so that at the start of a trial you do not know if the search task will 
+come early or late.
 
 During the whole experiment, at every trial, always try to remember the picture
 as good as possible.

@@ -24,7 +24,9 @@ params['ports'] = [portOut,portIn]
 
 # Create trigger dictionary, handy for indexing with names
 params['triggers'] = {
-	'practice': 90,
+	'practice_long': 91,
+	'practice_short': 92,
+	'practice_mixed': 93,
 	'mixed': 	20,
 	'blocked': 	0,
 	'long':		20,
@@ -107,14 +109,16 @@ for b,block in enumerate(block_order):
 
 	if b==0: # show some additional explanation screens if first block
 		exp.run_instruction('stimuli/instruct1.txt')
-		exp.run_example_trial(['face',inFiles[0][0],'present','short','example'])
+		exp.run_example_trial(['face',inFiles[0][0],'present','examp_short','example'])
 		exp.run_instruction('stimuli/instruct2.txt')
-		exp.run_example_trial(['house',inFiles[1][10],'absent','long','example'])
+		exp.run_example_trial(['house',inFiles[1][10],'absent','examp_long','example'])
 		exp.run_instruction('stimuli/instruct3.txt')
-		exp.run()
+	exp.run()
+	if b==len(block_order)-1:
+		exp.run_instruction('stimuli/finish_practice.txt')
 
 for b,block in enumerate(block_order):
-	
+
 	# experimental block
 	params['block_type'] = block
 	params['ready_text'] = ('stimuli/ready_' + block + '.txt')

@@ -15,10 +15,6 @@ class Trial(object):
 		self.category = trial_settings[0]
 		self.target = trial_settings[1]
 		self.presence = trial_settings[2]
-		if self.block_type == 'mixed':
-			self.trial_type = trial_settings[3] # use the semi-randomized assignment of short/long
-		else: # if it's a fixed block
-			self.trial_type = self.block_type # the trial type is the same as block type
 		self.trial_settings = trial_settings
 		self.parameters = parameters
 		self.screen = screen
@@ -65,7 +61,7 @@ class Trial(object):
 				if self.category=='letter':
 					whichletter = int(self.target[len(self.target)-13:len(self.target)-11])
 				else:
-					whichletter = choice(range(25))
+					whichletter = choice(range(25))+1
 				cat = cat[whichletter*4-4:whichletter*4]
 				shuffle(cat)
 			else:
@@ -100,12 +96,19 @@ class Trial(object):
 		iti_jitt    = int(floor(float(self.parameters['timing_ITI_Jitter']) * float(self.parameters['monitor_refRate'])))
 		target_time = int(floor(float(self.parameters['timing_target_Duration']) * float(self.parameters['monitor_refRate'])))
 
+		if 'mixed' in self.block_type:
+			self.trial_type = self.trial_settings[3] # use the semi-randomized assignment of short/long
+		elif 'long' in self.block_type: # if it's a fixed block
+			self.trial_type = 'long' # the trial type is the same as block type
+		elif 'short' in self.block_type: # if it's a fixed block
+			self.trial_type = 'short' # the trial type is the same as block type
+
 		if   self.trial_type == 'short': toggle = 0
 		elif self.trial_type == 'long': toggle = 1
 
 		# example trials during intruction have short/long hard-coded as arguments
-		if   'short' in self.trial_settings: toggle = 0
-		elif 'long'  in self.trial_settings: toggle = 1
+		if   'examp_short' in self.trial_settings: toggle = 0
+		elif 'examp_long'  in self.trial_settings: toggle = 1
 
 		isi_time = int(floor(float(self.parameters['timing_ISI_Duration'][toggle]) * float(self.parameters['monitor_refRate'])))
 
@@ -155,6 +158,7 @@ class Trial(object):
 
 			# to pause/quit the experiment, press p/q
 			if self.keypress=='p':
+				dbstop()
 				continue
 			elif self.keypress=='q':
 				quit()			

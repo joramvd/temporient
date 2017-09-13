@@ -1,0 +1,9 @@
+You will now practice for NTRIALS trials.
+
+In this practice block, the search task will always
+come early.
+
+You will receive feedback every time you respond.
+
+Are you ready?
+Press a button to start!

@@ -1,7 +1,7 @@
 You will now practice for NTRIALS trials.
 
-In this part of the experiment, you will not know if the search task
-will come early or late.
+In this practice block, the search task will always
+come late.
 
 You will receive feedback every time you respond.
 
