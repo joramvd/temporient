@@ -18,6 +18,7 @@ class Trial(object):
 		self.trial_settings = trial_settings
 		self.parameters = parameters
 		self.screen = screen
+		self.mode = self.parameters['mode']
 
 		self.searchStim = list()
 		self.feedbackStim = list()
@@ -92,10 +93,6 @@ class Trial(object):
 		portOut = self.parameters['ports'][0]
 		portIn = self.parameters['ports'][1]
 
-		iti_time    = int(floor(float(self.parameters['timing_ITI_Duration']) * float(self.parameters['monitor_refRate'])))
-		iti_jitt    = int(floor(float(self.parameters['timing_ITI_Jitter']) * float(self.parameters['monitor_refRate'])))
-		target_time = int(floor(float(self.parameters['timing_target_Duration']) * float(self.parameters['monitor_refRate'])))
-
 		if 'mixed' in self.block_type:
 			self.trial_type = self.trial_settings[3] # use the semi-randomized assignment of short/long
 		elif 'long' in self.block_type: # if it's a fixed block
@@ -110,93 +107,100 @@ class Trial(object):
 		if   'examp_short' in self.trial_settings: toggle = 0
 		elif 'examp_long'  in self.trial_settings: toggle = 1
 
-		isi_time = int(floor(float(self.parameters['timing_ISI_Duration'][toggle]) * float(self.parameters['monitor_refRate'])))
+		isi_time    = int(floor(float(self.parameters['timing_ISI_Duration'][toggle]) * float(self.parameters['monitor_refRate'])))
+		iti_time    = int(floor(float(self.parameters['timing_ITI_Duration']) * float(self.parameters['monitor_refRate'])))
+		iti_jitt    = int(floor(float(self.parameters['timing_ITI_Jitter']) * float(self.parameters['monitor_refRate'])))
+		target_time = int(floor(float(self.parameters['timing_target_Duration']) * float(self.parameters['monitor_refRate'])))
 
-		# Change fixation to white to start ITI with jitter
-		for frame in range(iti_time + randrange(-1*iti_jitt, iti_jitt)): 
-			self.fixStim.fillColor=[1,1,1]
-			self.fixStim.lineColor=[1,1,1]
-			self.fixStim.draw()
-			self.screen.flip()
-
-		# Present search-target stimulus
-		if portOut:
-			portOut.setData(int(self.parameters['triggers'][self.block_type]+self.parameters['triggers'][self.trial_type]+self.parameters['triggers'][self.category])); core.wait(0.02) # code for category (1,2,3) and short/long/practice block type (+ 60/70/80)
-			portOut.setData(0)
-		else:
-			print(int(self.parameters['triggers'][self.block_type]+self.parameters['triggers'][self.trial_type]+self.parameters['triggers'][self.category]))
-		for frame in range(target_time):
-			self.targetStim.draw()
-			self.fixStim.draw()
-			self.screen.flip()
-
-		# ISI
-		for frame in range(isi_time):
-			self.fixStim.draw()
-			self.screen.flip()
-
-		# Present search array stimulus until response
-		if portOut:
-			portOut.setData(int((self.parameters['triggers'][self.presence]*(self.randpos[0]+1))+self.parameters['triggers']['search'])); core.wait(0.02) # code for stimulus position in array (1-6; 0 when absent) 
-			portOut.setData(0)
-		else:
-			print(int((self.parameters['triggers'][self.presence]*(self.randpos[0]+1))+self.parameters['triggers']['search']))
-
-		self.timer.reset()
-		while True:
-			for currStim in self.searchStim: currStim.draw()
-			self.fixStim.draw()
-			self.screen.flip()
-			if portIn:
-				self.button = portIn.readData()
-				for key in event.getKeys():
-					self.keypress = key
-			else:
-				for key in event.getKeys():
-					self.button = key
-					self.keypress = key
-
-			# to pause/quit the experiment, press p/q
-			if self.keypress=='p':
-				dbstop()
-				continue
-			elif self.keypress=='q':
-				quit()			
-			# otherwise, or to resume a pause, an appropriate button has to be pressed
-			elif self.button in self.parameters['resp_keys']:
-				rt=self.timer.getTime()
-				break
-			# if not paused, and no button is pressed, next trial after 5 seconds
-			elif self.timer.getTime() > 5.0:
-				self.button=None
-				self.missing=True
-				rt=0.0
-				break
-
-		self.response = [self.button,rt]
-
-		# determine accuracy
-		if ('present' in self.presence and self.response[0] == self.parameters['resp_keys'][0]) or ('absent' in self.presence and self.response[0] == self.parameters['resp_keys'][1]):
-			accuracy = 1
-		else: 
-			accuracy = 0
-
-		# Present feedback after response
-		if self.missing:
-			for frame in range(iti_jitt):
-				self.feedbackStim[2].draw()
-				self.screen.flip()
-		elif 'practice' in self.block_type:
-			for frame in range(iti_jitt):
-				self.feedbackStim[accuracy].draw()
-				self.screen.flip()
-		else:
-			# Present black fixation point right after self.button press of previous trial
-			for frame in range(iti_jitt): 
-				self.fixStim.fillColor=[-1,-1,-1]
-				self.fixStim.lineColor=[-1,-1,-1]
+		if not 'simulation' in self.mode:
+			# Change fixation to white to start ITI with jitter
+			for frame in range(iti_time + randrange(-1*iti_jitt, iti_jitt)): 
+				self.fixStim.fillColor=[1,1,1]
+				self.fixStim.lineColor=[1,1,1]
 				self.fixStim.draw()
 				self.screen.flip()
+
+			# Present search-target stimulus
+			if portOut:
+				portOut.setData(int(self.parameters['triggers'][self.block_type]+self.parameters['triggers'][self.trial_type]+self.parameters['triggers'][self.category])); core.wait(0.02) # code for category (1,2,3) and short/long/practice block type (+ 60/70/80)
+				portOut.setData(0)
+			else:
+				print(int(self.parameters['triggers'][self.block_type]+self.parameters['triggers'][self.trial_type]+self.parameters['triggers'][self.category]))
+			for frame in range(target_time):
+				self.targetStim.draw()
+				self.fixStim.draw()
+				self.screen.flip()
+
+			# ISI
+			for frame in range(isi_time):
+				self.fixStim.draw()
+				self.screen.flip()
+
+			# Present search array stimulus until response
+			if portOut:
+				portOut.setData(int((self.parameters['triggers'][self.presence]*(self.randpos[0]+1))+self.parameters['triggers']['search'])); core.wait(0.02) # code for stimulus position in array (1-6; 0 when absent) 
+				portOut.setData(0)
+			else:
+				print(int((self.parameters['triggers'][self.presence]*(self.randpos[0]+1))+self.parameters['triggers']['search']))
+
+			self.timer.reset()
+			while True:
+				for currStim in self.searchStim: currStim.draw()
+				self.fixStim.draw()
+				self.screen.flip()
+				if portIn:
+					self.button = portIn.readData()
+					for key in event.getKeys():
+						self.keypress = key
+				else:
+					for key in event.getKeys():
+						self.button = key
+						self.keypress = key
+
+				# to pause/quit the experiment, press p/q
+				if self.keypress=='p':
+					dbstop()
+					continue
+				elif self.keypress=='q':
+					quit()			
+				# otherwise, or to resume a pause, an appropriate button has to be pressed
+				elif self.button in self.parameters['resp_keys']:
+					rt=self.timer.getTime()
+					break
+				# if not paused, and no button is pressed, next trial after 5 seconds
+				elif self.timer.getTime() > 5.0:
+					self.button=None
+					self.missing=True
+					rt=0.0
+					break
+
+			self.response = [self.button,rt]
+
+			# determine accuracy
+			if ('present' in self.presence and self.response[0] == self.parameters['resp_keys'][0]) or ('absent' in self.presence and self.response[0] == self.parameters['resp_keys'][1]):
+				accuracy = 1
+			else: 
+				accuracy = 0
+
+			# Present feedback after response
+			if self.missing:
+				for frame in range(iti_jitt):
+					self.feedbackStim[2].draw()
+					self.screen.flip()
+			elif 'practice' in self.block_type:
+				for frame in range(iti_jitt):
+					self.feedbackStim[accuracy].draw()
+					self.screen.flip()
+			else:
+				# Present black fixation point right after self.button press of previous trial
+				for frame in range(iti_jitt): 
+					self.fixStim.fillColor=[-1,-1,-1]
+					self.fixStim.lineColor=[-1,-1,-1]
+					self.fixStim.draw()
+					self.screen.flip()
+		else:
+			self.response=['x',np.random.uniform(900,1500,1)[0]]
+			accuracy=choice([0,1])
 
 		return ([self.block_type, self.trial_type, self.category, self.presence, self.response[1], accuracy])
 

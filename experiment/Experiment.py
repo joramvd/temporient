@@ -96,7 +96,8 @@ class Experiment(object):
 			sumacc = sumacc+trialdata[5]
 			if fmod(k+1,len(self.trial_settings)/self.parameters['nblocks'])==0: # feedback after mini/practice block
 				blocki = blocki + 1
-				avgacc = round(float(sumacc)/float(len(expdata))*100.0)
+				avgacc = round(float(sumacc)/float(len(self.trial_settings)/self.parameters['nblocks'])*100.0)
+				sumacc = 0
 				text2show = 'This was block ' + str(blocki) + ' of ' + str(self.parameters['nblocks']) + '\n\nYour accuracy was ' + str(avgacc) + '\n\nPress a button to continue'
 				text_screen = Text(self.parameters, self.screen, text2show)
 				text_screen.show()

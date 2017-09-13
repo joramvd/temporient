@@ -4,6 +4,8 @@ from Experiment import *
 ## Define parameters
 params = {}
 
+params['mode'] = 'simulation'
+
 params['categories'] = ('face','house','letter')
 # Get filenames of pictures 
 inFiles = list()
@@ -122,15 +124,15 @@ for b,block in enumerate(block_order):
 	# experimental block
 	params['block_type'] = block
 	params['ready_text'] = ('stimuli/ready_' + block + '.txt')
-	params['ntrials']    = 240 # needs to be divided by 3 (categories)
-	params['nblocks']    = 8
-	params['rep_check']  = (params['ntrials']/params['nblocks'],5) # 240 trials are divided up in 8 chuncks of 30 where absent/present is shuffled such that no 5 repetitions are allowed
+	params['ntrials']    = 168 # needs to be divided by 3 (categories)
+	params['nblocks']    = 6
+	params['rep_check']  = (params['ntrials']/params['nblocks'],5) # 168 trials are divided up in 8 chuncks of 30 where absent/present is shuffled such that no 5 repetitions are allowed
 	exp = Experiment(params) 
 	exp.run()
 	if exp.finished():
 	   exp.store()
 
-	   if b==1:
+	   if b==2:
 		   exp.run_instruction('stimuli/finish_exp.txt')
 
 # END #
