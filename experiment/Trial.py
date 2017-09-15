@@ -162,7 +162,6 @@ class Trial(object):
 
 				# to pause/quit the experiment, press p/q
 				if self.keypress=='p':
-					dbstop()
 					continue
 				elif self.keypress=='q':
 					quit()			
