@@ -203,8 +203,3 @@ class Trial(object):
 			accuracy=choice([0,1])
 
 		return ([self.block_type, self.trial_type, self.category, self.presence, self.response[1], accuracy])
-
-
-	#def export(self):
-	#	return np.concatenate([self.trial_settings.copy(), self.response.copy()])
-
