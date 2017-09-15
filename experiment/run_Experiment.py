@@ -55,7 +55,7 @@ if any(ans in fS for ans in['n','N']):
 else:
         params['fullScreen'] = True
 
-params['monitor_refRate'] = 60 # fixed to 60hz for now 
+params['monitor_refRate'] = 120 # 60hz for macbook; 120hz for lab 
 params['monitor_width'] = 47.5
 params['monitor_viewdist'] = 90
 params['screenSize'] = [1680, 1050]

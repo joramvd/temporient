@@ -20,6 +20,16 @@ class Trial(object):
 		self.screen = screen
 		self.mode = self.parameters['mode']
 
+		# determine trial and block type
+		if 'mixed' in self.block_type:
+			self.trial_type = self.trial_settings[3] # use the semi-randomized assignment of short/long
+		elif 'long' in self.block_type: # if it's a fixed block
+			self.trial_type = 'long' # the trial type is the same as block type
+			self.block_type = 'blocked'
+		elif 'short' in self.block_type: # if it's a fixed block
+			self.trial_type = 'short' # the trial type is the same as block type
+			self.block_type = 'blocked'
+
 		self.searchStim = list()
 		self.feedbackStim = list()
 		self.response = list()
@@ -92,13 +102,6 @@ class Trial(object):
 
 		portOut = self.parameters['ports'][0]
 		portIn = self.parameters['ports'][1]
-
-		if 'mixed' in self.block_type:
-			self.trial_type = self.trial_settings[3] # use the semi-randomized assignment of short/long
-		elif 'long' in self.block_type: # if it's a fixed block
-			self.trial_type = 'long' # the trial type is the same as block type
-		elif 'short' in self.block_type: # if it's a fixed block
-			self.trial_type = 'short' # the trial type is the same as block type
 
 		if   self.trial_type == 'short': toggle = 0
 		elif self.trial_type == 'long': toggle = 1
