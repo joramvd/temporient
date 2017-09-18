@@ -25,9 +25,10 @@ class Trial(object):
 			self.trial_type = self.trial_settings[3] # use the semi-randomized assignment of short/long
 		elif 'long' in self.block_type: # if it's a fixed block
 			self.trial_type = 'long' # the trial type is the same as block type
-			self.block_type = 'blocked'
 		elif 'short' in self.block_type: # if it's a fixed block
 			self.trial_type = 'short' # the trial type is the same as block type
+
+		if not 'mixed' or not 'practice' in self.block_type:
 			self.block_type = 'blocked'
 
 		self.searchStim = list()
@@ -201,6 +202,9 @@ class Trial(object):
 					self.fixStim.draw()
 					self.screen.flip()
 		else:
+			cue_trig = int(self.parameters['triggers'][self.block_type]+self.parameters['triggers'][self.trial_type]+self.parameters['triggers'][self.category]) 
+			search_trig = int((self.parameters['triggers'][self.presence]*(self.randpos[0]+1))+self.parameters['triggers']['search'])
+			print((str(cue_trig) + ' ' + str(search_trig)))
 			self.response=['x',np.random.uniform(900,1500,1)[0]]
 			accuracy=choice([0,1])
 
