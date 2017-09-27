@@ -28,8 +28,9 @@ class Trial(object):
 		elif 'short' in self.block_type: # if it's a fixed block
 			self.trial_type = 'short' # the trial type is the same as block type
 
-		if not 'mixed' or not 'practice' in self.block_type:
-			self.block_type = 'blocked'
+		if not 'practice' in self.block_type:
+			if not 'mixed' in self.block_type:
+				self.block_type = 'blocked'
 
 		self.searchStim = list()
 		self.feedbackStim = list()

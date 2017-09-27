@@ -4,7 +4,7 @@ from Experiment import *
 ## Define parameters
 params = {}
 
-params['mode'] = 'real'
+params['mode'] = 'simulation'
 
 params['categories'] = ('face','house','letter')
 # Get filenames of pictures 
